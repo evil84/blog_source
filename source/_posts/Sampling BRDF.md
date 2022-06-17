@@ -64,9 +64,9 @@ $$z = cos(\theta)$$
 
 令$E.x = \epsilon_2, E.y = \epsilon_1$, 可知：
 
-$cos(\theta) = E.y$
+$$cos(\theta) = E.y$$
 
-$sin(\theta) = \sqrt[2]{1 - E.y * E.y}$
+$$sin(\theta) = \sqrt[2]{1 - E.y * E.y}$$
 
 $$cos(\phi) = cos(2 *\pi * E.x)$$
 
@@ -93,8 +93,6 @@ float4 UniformSampleHemisphere( float2 E )
 	return float4( H, PDF );
 }
 ```
-
-
 
 ## Cosine Weight Sample Hemisphere
 
@@ -124,9 +122,10 @@ $$Pdf(\theta) = \int_0^{2\pi} \frac{cos(\theta)}{\pi} sin(\theta) d\phi = 2 cos(
 
 然后计算累计分布函数：
 
-$$Cdf(\theta) = \int_0^{\theta}2cos(\theta)sin(\theta) = 1-{{\cos^2{\left( \theta \right) }}}$$
 
-令$\epsilon_1 = 1 - cos^2(\theta)$，可知$\theta = cos^{-1}\sqrt{1 - \epsilon_1}$，同理用$\epsilon_1$替换$1-\epsilon_1$，可得$\theta = cos^{-1}\sqrt{\epsilon_1}$
+$$Cdf(\theta) = \int_0^{\theta}2cos(\theta)sin(\theta) = 1-cos^2(\theta)$$
+
+令$\epsilon_1 = 1 - cos^2(\theta)$，可知$\theta = cos^{ -1 }\sqrt{ 1 - \epsilon_1 }$，同理用$\epsilon_1$替换$1-\epsilon_1$，可得$\theta = cos^{-1} \sqrt{\epsilon_1}$
 
 继续求$Cdf(\phi | \theta)$：
 
@@ -174,13 +173,19 @@ $$Pdf(\omega) = \frac{a^2 cos(\theta)}{\pi ( cos^2(\theta)(a^2 - 1) + 1)^2}$$
 
 $$Pdf(\theta, \phi) = \frac{a^2 cos(\theta) sin(\theta)}{\pi ( cos^2(\theta)(a^2 - 1) + 1)^2}$$
 
-$$Pdf(\theta) = \int_0^{2\pi}\frac{a^2 cos(\theta) sin(\theta)}{\pi ( cos^2(\theta)(a^2 - 1) + 1)^2}d\phi = \frac{2 {{a}^{2}} \cos{(\theta)} \sin{(\theta)}}{{{\left( \\cos^2{(\theta)} ({{a}^{2}}-1)+1\right) }^{2}}}$$ 
+$$Pdf(\theta) = \int_0^{2\pi}\frac{a^2 cos(\theta) sin(\theta)}{\pi ( cos^2(\theta)(a^2 - 1) + 1)^2}d\phi = \frac{2a^2cos(\theta)sin(\theta)}{(cos^2(\theta)(a^2-1)+1)^2}$$ 
 
-$$Pdf(\phi|\theta)= \frac{Pdf(\theta,\phi)}{Pdf(\theta)} = \frac{\frac{a^2 cos(\theta) sin(\theta)}{\pi ( cos^2(\theta)(a^2 - 1) + 1)^2}}{\frac{2 {{a}^{2}} \cos{(\theta)} \sin{(\theta)}}{{{\left( \cos^2{(\theta)} ({{a}^{2}}-1)+1\right) }^{2}}}} = \frac{1}{2\pi}$$
+$$Pdf(\phi|\theta)= \frac{\frac{a^2 cos(\theta) sin(\theta)}{\pi ( cos^2(\theta)(a^2 - 1) + 1)^2}}{\frac{2a^2cos(\theta)sin(\theta)}{(cos^2(\theta)(a^2-1)+1)^2}} = \frac{1}{2\pi}$$
 
-$$Cdf(\theta) = \int_0^{\theta}\frac{2 {{a}^{2}} \cos{(t)} \sin{(t)}}{{{\left( \\cos^2{(t)} ({{a}^{2}}-1)+1\right) }^{2}}}dt = -\frac{cos^2(\theta) - 1}{( {{a}^{2}}-1)  {{cos^2{( \theta ) }}}+1}$$
+$$Cdf(\theta) = \int_0^{\theta}\frac{2a^2cos(t)sin(t)}{(cos^2(t)(a^2-1)+1)^2}dt = -\frac{cos^2(\theta)-1}{(a^2-1)  cos^2(\theta)+1}$$
 
-令$\epsilon = -\frac{cos^2(\theta) - 1}{( {{a}^{2}}-1)  {{cos^2{( \theta ) }}}+1}$，可知$\theta = cos^{-1}\left( \sqrt{\frac{1-\epsilon}{\left( {{a}^{2}}-1\right)  \epsilon+1}}\right)$
+令：
+
+$$\epsilon = -\frac{cos^2(\theta)-1}{(a^2-1)  cos^2(\theta)+1}$$
+
+可知：
+
+$$\theta = cos^{-1}(\sqrt{\frac{1-\epsilon}{(a^2-1)\epsilon+1}})$$
 
 求解$\phi$同上，这里就不赘述了。
 
@@ -207,7 +212,7 @@ float4 ImportanceSampleGGX( float2 E, float a2 )
 ```
 ### GGX anisotropic
 
-$$D_{GGX\_aniso}(m,\alpha) = \frac{1}{\pi \alpha_t \alpha_b} \frac{1}{((\frac{t \cdot m}{\alpha_t})^2 + (\frac{b \cdot m}{\alpha_b})^2 + (n \cdot m)^2)^2}$$
+
 
 
 ### beckmann isotropic
@@ -215,12 +220,3 @@ $$D_{GGX\_aniso}(m,\alpha) = \frac{1}{\pi \alpha_t \alpha_b} \frac{1}{((\frac{t 
 ### beckmann anisotropic
 
 ### blinn phong
-
-
-
-
-
-
-
-
-
