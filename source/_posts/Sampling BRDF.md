@@ -6,6 +6,8 @@ tags: "Ray Tracing from the Ground Up"
 mathjax: true
 ---
 
+[TOC]
+
 ## 基本概念
 
 1. $Pdf(\omega)$ : 立体角上的概率密度函数 （平常我们采样函数返回的pdf是这个）
