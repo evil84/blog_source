@@ -212,17 +212,19 @@ float4 ImportanceSampleGGX( float2 E, float a2 )
 ```
 ### beckmann isotropic
 
+
 $$D_Beckmann(m,\alpha) = \frac{e^{\frac{-tan^2(\theta)}{\alpha^2}}}{\pi\alpha^2cos^4(\theta)}$$
 
 $$Pdf(\omega) = \frac{e^{\frac{-tan^2(\theta)}{\alpha^2}}}{\pi\alpha^2cos^4(\theta)} cos(\theta)$$
 
 $$Pdf(\theta,\phi) = \frac{e^{\frac{-tan^2(\theta)}{\alpha^2}}}{\pi\alpha^2cos^4(\theta)} cos(\theta) sin(\theta)$$
 
-$$Pdf(\theta) = \int_0^{2\pi}\frac{e^{\frac{-tan^2(\theta)}{\alpha^2}}}{\pi\alpha^2cos^4(\theta)} cos(\theta) sin(\theta)d\phi = \frac{2{e^{-\frac{tan^2(\theta)}{\alpha^2}}}}{{\alpha^2} {cos^3(\theta)}}sin(\theta)$$  
+
+$$Pdf(\theta) = \int_0^{2\pi} \frac {e^{\frac{-tan^2(\theta)} {\alpha^2} } } {\pi\alpha^2cos^4(\theta)} cos(\theta) sin(\theta)d\phi = \frac{2{e^{-\frac{tan^2(\theta)} {\alpha^2}}}}{ {\alpha^2} {cos^3(\theta)}}sin(\theta)$$  
 
 $$Pdf(\phi|\theta) = \frac{Pdf(\theta,\phi)}{Pdf(\theta)} = \frac{1}{2\pi}$$
 
-$$Cdf(\theta) = \int_0^{\theta}\frac{2{e^{-\frac{tan^2(t)}{\alpha^2}}}}{{\alpha^2} {cos^3(t)}}sin(t)dt = 1 - e^{\frac{1}{\alpha^2} - \frac{1}{\alpha^2 cos^2(\theta)}} = 1 - e^{\frac{1}{\alpha^2}(1 - \frac{1}{cos^2(\theta)})}$$
+$$Cdf(\theta) = \int_0^{\theta}\frac{2{e^{-\frac{tan^2(t)}{\alpha^2}}}}{ {\alpha^2} {cos^3(t)}} sin(t) dt = 1 - e^{\frac{1}{\alpha^2} - \frac{1}{\alpha^2 cos^2(\theta) }} = 1 - e^{ \frac{1} {\alpha^2} (1-\frac{1}{cos^2(\theta)})}$$
 
 令：
 
@@ -233,6 +235,7 @@ $$\epsilon = 1 - e^{\frac{1}{\alpha^2}(1 - \frac{1}{cos^2(\theta)})}$$
 $$\theta = cos^{-1}(\sqrt{\frac{1}{1 - \alpha^2ln(1-\epsilon)}})$$ 
 
 求解$\phi$同上，不再赘述。
+
 
 ### Blinn Phong
 
