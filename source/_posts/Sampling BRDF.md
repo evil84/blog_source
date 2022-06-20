@@ -304,9 +304,25 @@ $$\phi = tan^{-1}(\frac{\alpha_b}{\alpha_t} tan(2\pi\epsilon_1))$$
 
 
 
-$$Pdf(\theta|\phi) = \frac{Pdf(\theta,\phi)}{Pdf(\phi)} = \frac{\frac{1}{\pi\alpha_t\alpha_b cos^3(\theta)(tan^2(\theta) (\frac{cos^2(\phi)}{\alpha_t^2} + \frac{sin^2(\phi)}{\alpha_b^2})+1)^2}sin(\theta)}{\frac{1}{2 \pi \alpha_t \alpha_b(\frac{cos^2(\phi)}{\alpha_t^2} + \frac{sin^2(\phi)}{\alpha_b^2})}}$$
 
 
+我们令$K = (\frac{cos^2(\phi)}{\alpha_t^2} + \frac{sin^2(\phi)}{\alpha_b^2})$，可知：
+
+$$Pdf(\theta|\phi) = \frac{Pdf(\theta,\phi)}{Pdf(\phi)} = \frac{\frac{1}{\pi\alpha_t\alpha_b cos^3(\theta)(tan^2(\theta) (\frac{cos^2(\phi)}{\alpha_t^2} + \frac{sin^2(\phi)}{\alpha_b^2})+1)^2}sin(\theta)}{\frac{1}{2 \pi \alpha_t \alpha_b(\frac{cos^2(\phi)}{\alpha_t^2} + \frac{sin^2(\phi)}{\alpha_b^2})}} \\ = \frac{\frac{sin(\theta)}{\pi \alpha_t \alpha_b cos^3(\theta)(tan^2(\theta)K + 1)^2}}{\frac{1}{2 \pi \alpha_t \alpha_bK}} \\ = \frac{2sin(\theta)K}{cos^3(\theta)(tan^2(\theta)K+1)^2}$$
+
+
+
+$$Cdf(\theta|\phi) = \int_0^{\theta}\frac{2sin(t)K}{cos^3(t)(tan^2(t)K+1)^2}dt =  \frac{Ksin^2(\theta)}{(K-1)sin^2(\theta)+1}$$
+
+令$\epsilon_1 = \frac{Ksin^2(\theta)}{(K-1)sin^2(\theta)+1}$，可得：
+
+$$\theta = sin^{-1}(\sqrt\frac{-\epsilon_1}{K\epsilon_1 - \epsilon_1 - K})$$
+
+$$sin(\theta) = \sqrt\frac{-\epsilon_1}{K\epsilon_1 - \epsilon_1 - K}$$
+
+$$cos^2(\theta) = 1 - \frac{-\epsilon_1}{K\epsilon_1 - \epsilon_1 - K} = \frac{K\epsilon_1 - K}{K\epsilon_1 - \epsilon_1 - K} = \frac{K(1-\epsilon_1)}{K + (1-K)\epsilon_1}$$
+
+$$\theta = cos^{-1} \sqrt{\frac{K(1-\epsilon_1)}{K + (1-K)\epsilon_1}}$$
 
 PBRT-V3代码参考：
 
