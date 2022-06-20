@@ -12,8 +12,8 @@ mathjax: true
 
 1. $Pdf(\omega)$ : 立体角上的概率密度函数 （平常我们采样函数返回的pdf是这个）
 2. $Pdf(\theta, \phi)$ : 球面坐标系上的概率密度函数 
-3. $Pdf(\theta) = \int_0^\pi Pdf(\theta, \phi) d\phi$: $Pdf(\theta, \phi)$关于$\theta$的边缘概率密度函数
-4. $Pdf(\phi | \theta) = \frac{Pdf(\theta, \phi)}{Pdf(\theta)}$: $\phi$关于$\theta$的条件概率密度函数
+3. $Pdf(\theta) = \int_0^\pi Pdf(\theta, \phi) d\phi$: $Pdf(\theta, \phi)$关于$\theta$的边缘概率密度函数（marginal probability density function）
+4. $Pdf(\phi | \theta) = \frac{Pdf(\theta, \phi)}{Pdf(\theta)}$: $\phi$关于$\theta$的条件概率密度函数（conditional probability density function）
 5. 我们有在(0, 1)范围内均匀分布概率的随机函数，生成的随机数我们定义为$\epsilon$,想计算出满足指定概率分布的随机数，这个时候需要用到逆变换采样(Inverse transform sampling)，首先对pdf求cdf：$cdf(x) = \int_{-\infty}^x{f(t)dt}$，然后令$\epsilon = cdf(x)$, 然后我们只需要求出$cdf^{-1}(x)$即是满足该概率分布的随机数。
 
 ## Uniform Sample Hemisphere
@@ -187,7 +187,7 @@ $$\epsilon = -\frac{cos^2(\theta)-1}{(a^2-1)  cos^2(\theta)+1}$$
 
 $$\theta = cos^{-1}(\sqrt{\frac{1-\epsilon}{(a^2-1)\epsilon+1}})$$
 
-求解$\phi$同上，这里就不赘述了。
+求解$\phi$同上，不再赘述。
 
 UE5代码参考：
 
@@ -210,13 +210,147 @@ float4 ImportanceSampleGGX( float2 E, float a2 )
 	return float4( H, PDF );
 }
 ```
+### beckmann isotropic
+
+$$D_Beckmann(m,\alpha) = \frac{e^{\frac{-tan^2(\theta)}{\alpha^2}}}{\pi\alpha^2cos^4(\theta)}$$
+
+$$Pdf(\omega) = \frac{e^{\frac{-tan^2(\theta)}{\alpha^2}}}{\pi\alpha^2cos^4(\theta)} cos(\theta)$$
+
+$$Pdf(\theta,\phi) = \frac{e^{\frac{-tan^2(\theta)}{\alpha^2}}}{\pi\alpha^2cos^4(\theta)} cos(\theta) sin(\theta)$$
+
+$$Pdf(\theta) = \int_0^{2\pi}\frac{e^{\frac{-tan^2(\theta)}{\alpha^2}}}{\pi\alpha^2cos^4(\theta)} cos(\theta) sin(\theta)d\phi = \frac{2{e^{-\frac{tan^2(\theta)}{\alpha^2}}}}{{\alpha^2} {cos^3(\theta)}}sin(\theta)$$  
+
+$$Pdf(\phi|\theta) = \frac{Pdf(\theta,\phi)}{Pdf(\theta)} = \frac{1}{2\pi}$$
+
+$$Cdf(\theta) = \int_0^{\theta}\frac{2{e^{-\frac{tan^2(t)}{\alpha^2}}}}{{\alpha^2} {cos^3(t)}}sin(t)dt = 1 - e^{\frac{1}{\alpha^2} - \frac{1}{\alpha^2 cos^2(\theta)}} = 1 - e^{\frac{1}{\alpha^2}(1 - \frac{1}{cos^2(\theta)})}$$
+
+令：
+
+$$\epsilon = 1 - e^{\frac{1}{\alpha^2}(1 - \frac{1}{cos^2(\theta)})}$$
+
+可知：
+
+$$\theta = cos^{-1}(\sqrt{\frac{1}{1 - \alpha^2ln(1-\epsilon)}})$$ 
+
+求解$\phi$同上，不再赘述。
+
+### Blinn Phong
+
+$$D_{Blinn}(m, \alpha) = \frac{\alpha+2}{2\pi}cos^\alpha(\theta)$$
+
+$$Pdf(\omega) = \frac{\alpha+2}{2\pi}cos^{\alpha+1}(\theta)$$
+
+$$Pdf(\theta,\phi) = \frac{\alpha+2}{2\pi}cos^{\alpha+1}(\theta)sin(\theta)$$
+
+$$Pdf(\theta) = \int_0^{2\pi}\frac{\alpha+2}{2\pi}cos^{\alpha+1}(\theta)sin(\theta)d\phi = (\alpha+2)cos^{\alpha+1}(\theta)sin(\theta)$$
+
+$$Pdf(\phi,\theta) = \frac{Pdf(\theta,\phi)}{Pdf(\theta)} = \frac{1}{2\pi}$$
+
+$$Cdf(\theta) = \int_0^{\theta}(\alpha+2)cos^{\alpha+1}(t)sin(t)dt = 1 - cos^{\alpha+2}(\theta)$$
+
+令：
+
+$$\epsilon = 1 - cos^{\alpha+2}(\theta)$$
+
+可知：
+
+$$\theta = cos^{-1}((1-\epsilon)^{(\frac{1}{\alpha+2})})$$
+
+求解$\phi$同上，不再赘述。
+
+### Visible GGX isotropic
+
+
+
 ### GGX anisotropic
 
+从Physically-Based Shading at Disney可知：
+
+$$D_{GGX\_aniso}(m, \alpha) = \frac{1}{\pi\alpha_t\alpha_b} \frac{1}{((\frac{t \cdot h}{\alpha_t})^2 + (\frac{b \cdot h}{\alpha_b})^2 + (m \cdot n)^2)^2} = \frac{1}{\pi\alpha_t\alpha_b} \frac{1}{((\frac{t \cdot h}{\alpha_t})^2 + (\frac{b \cdot h}{\alpha_b})^2 + (cos^2(\theta))^2}$$
+
+其中：
+
+$$t \cdot h = sin(\theta) cos(\phi)$$
+
+$$b \cdot h = sin(\theta)sin(\phi)$$
+
+化简：
+
+$$((\frac{t \cdot h}{\alpha_t})^2 + (\frac{b \cdot h}{\alpha_b})^2 + cos^2(\theta))^2 = (\frac{sin^2(\theta)cos^2(\phi)}{\alpha_t^2} + \frac{sin^2(\theta)sin^2(\phi)}{\alpha_b^2} + cos^2(\theta))^2 \\ = cos^4(\theta) \frac{1}{cos^4(\theta)} (\frac{sin^2(\theta)cos^2(\phi)}{\alpha_t^2} + \frac{sin^2(\theta)sin^2(\phi)}{\alpha_b^2} + cos^2(\theta))^2 \\ = cos^4(\theta)(tan^2(\theta) (\frac{cos^2(\phi)}{\alpha_t^2} + \frac{sin^2(\phi)}{\alpha_b^2})+1)^2$$
+
+可得：
+
+$$D_{GGX\_aniso}(m, \alpha) = \frac{1}{\pi\alpha_t\alpha_b cos^4(\theta)(tan^2(\theta) (\frac{cos^2(\phi)}{\alpha_t^2} + \frac{sin^2(\phi)}{\alpha_b^2})+1)^2}$$
+
+从而可知：
+
+$$Pdf(\omega) = \frac{1}{\pi\alpha_t\alpha_b cos^3(\theta)(tan^2(\theta) (\frac{cos^2(\phi)}{\alpha_t^2} + \frac{sin^2(\phi)}{\alpha_b^2})+1)^2}$$
+
+$$Pdf(\theta, \phi) = \frac{1}{\pi\alpha_t\alpha_b cos^3(\theta)(tan^2(\theta) (\frac{cos^2(\phi)}{\alpha_t^2} + \frac{sin^2(\phi)}{\alpha_b^2})+1)^2}sin(\theta)$$
+
+$$Pdf(\phi) = \int_0^{\frac{\pi}{2}} \frac{1}{\pi\alpha_t\alpha_b cos^3(\theta)(tan^2(\theta) (\frac{cos^2(\phi)}{\alpha_t^2} + \frac{sin^2(\phi)}{\alpha_b^2})+1)^2}sin(\theta) d\theta \\ = \frac{1}{2 \pi \alpha_t \alpha_b(\frac{cos^2(\phi)}{\alpha_t^2} + \frac{sin^2(\phi)}{\alpha_b^2})}$$
+
+$$Cdf(\phi) = \int_0^\phi \frac{1}{2 \pi \alpha_t \alpha_b(\frac{cos^2(t)}{\alpha_t^2} + \frac{sin^2(t)}{\alpha_b^2})} dt \\ = \frac{1}{2\pi}tan^{-1}(\frac{\alpha_t tan(\phi)}{\alpha_b})$$
+
+令：
+
+$$\epsilon_1 = \frac{1}{2\pi}tan^{-1}(\frac{\alpha_t tan(\phi)}{\alpha_b})$$
+
+可知：
+
+$$\phi = tan^{-1}(\frac{\alpha_b}{\alpha_t} tan(2\pi\epsilon_1))$$
+
+这里要注意，因为$tan^{-1}$的值域为$-\frac{\pi}{2}$到$\frac{\pi}{2}$，我们需要转换到$0$到$2\pi$，
 
 
 
-### beckmann isotropic
+$$Pdf(\theta|\phi) = \frac{Pdf(\theta,\phi)}{Pdf(\phi)} = \frac{\frac{1}{\pi\alpha_t\alpha_b cos^3(\theta)(tan^2(\theta) (\frac{cos^2(\phi)}{\alpha_t^2} + \frac{sin^2(\phi)}{\alpha_b^2})+1)^2}sin(\theta)}{\frac{1}{2 \pi \alpha_t \alpha_b(\frac{cos^2(\phi)}{\alpha_t^2} + \frac{sin^2(\phi)}{\alpha_b^2})}}$$
+
+
+
+PBRT-V3代码参考：
+
+```c++
+Vector3f TrowbridgeReitzDistribution::Sample_wh(const Vector3f &wo,
+                                                const Point2f &u) const {
+    Vector3f wh;
+    if (!sampleVisibleArea) {
+        Float cosTheta = 0, phi = (2 * Pi) * u[1];
+        if (alphax == alphay) {
+            Float tanTheta2 = alphax * alphax * u[0] / (1.0f - u[0]);
+            cosTheta = 1 / std::sqrt(1 + tanTheta2);
+        } else {
+            phi =
+                std::atan(alphay / alphax * std::tan(2 * Pi * u[1] + .5f * Pi));
+            if (u[1] > .5f) phi += Pi;
+            Float sinPhi = std::sin(phi), cosPhi = std::cos(phi);
+            const Float alphax2 = alphax * alphax, alphay2 = alphay * alphay;
+            const Float alpha2 =
+                1 / (cosPhi * cosPhi / alphax2 + sinPhi * sinPhi / alphay2);
+            Float tanTheta2 = alpha2 * u[0] / (1 - u[0]);
+            cosTheta = 1 / std::sqrt(1 + tanTheta2);
+        }
+        Float sinTheta =
+            std::sqrt(std::max((Float)0., (Float)1. - cosTheta * cosTheta));
+        wh = SphericalDirection(sinTheta, cosTheta, phi);
+        if (!SameHemisphere(wo, wh)) wh = -wh;
+    } else {
+        bool flip = wo.z < 0;
+        wh = TrowbridgeReitzSample(flip ? -wo : wo, alphax, alphay, u[0], u[1]);
+        if (flip) wh = -wh;
+    }
+    return wh;
+}
+```
+
+
+
+
 
 ### beckmann anisotropic
 
-### blinn phong
+### 
+
+
+
+Burley 2012, ["Physically-Based Shading at Disney"](http://blog.selfshadow.com/publications/s2012-shading-course/)
